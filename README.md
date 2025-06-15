@@ -29,8 +29,9 @@ Sistema desenvolvido como teste técnico para a startup **Montink**. O objetivo 
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/mini-erp-montink.git
-cd mini-erp-montink
+git clone https://github.com/caua075/teste_montink.git
+cd teste-montink
+cd erp_montink
 ```
 
 ### 2. Instale as dependências
@@ -51,7 +52,7 @@ No `.env`, configure seu banco MySQL:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=mini_erp
+DB_DATABASE=erp_montink
 DB_USERNAME=seu_usuario
 DB_PASSWORD=sua_senha
 ```
