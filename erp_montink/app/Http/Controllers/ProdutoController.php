@@ -126,28 +126,17 @@ class ProdutoController extends Controller
 
     public function finalizarPedido(Request $request)
     {
-        // Validar os dados do endereço e do pedido
-        $request->validate([
-            'cep' => 'required|regex:/^\d{5}-?\d{3}$/',
-            'logradouro_hidden' => 'required|string',
-            'bairro_hidden' => 'required|string',
-            'localidade_hidden' => 'required|string',
-            'uf_hidden' => 'required|string',
-        ]);
-    
-        $carrinho = session('carrinho', []);
-    
+        $carrinho = session()->get('carrinho', []);
         if (empty($carrinho)) {
-            return redirect()->back()->with('error', 'Carrinho vazio.');
+            return redirect()->route('produtos.index')->with('error', 'Carrinho vazio.');
         }
     
-        // Calcular subtotal
         $subtotal = 0;
         foreach ($carrinho as $item) {
             $subtotal += $item['preco'] * $item['quantidade'];
         }
     
-        // Calcular frete
+        // Regras de frete
         if ($subtotal > 200) {
             $frete = 0;
         } elseif ($subtotal >= 52 && $subtotal <= 166.59) {
@@ -158,21 +147,18 @@ class ProdutoController extends Controller
     
         $total = $subtotal + $frete;
     
-        // Criar pedido no banco
-        $pedido = Pedido::create([
-            'subtotal' => $subtotal,
-            'total' => $total,
-            'frete' => $frete,
-            'cep' => $request->cep,
+        // Salvar pedido
+        \App\Models\Pedido::create([
+            'subtotal'   => $subtotal,
+            'frete'      => $frete,
+            'total'      => $total,
+            'cep'        => $request->cep,
             'logradouro' => $request->logradouro_hidden,
-            'bairro' => $request->bairro_hidden,
+            'bairro'     => $request->bairro_hidden,
             'localidade' => $request->localidade_hidden,
-            'uf' => $request->uf_hidden,
+            'uf'         => $request->uf_hidden,
         ]);
     
-        // Aqui você pode adicionar código para salvar os itens do pedido, se quiser
-    
-        // Limpar sessão do carrinho
         session()->forget('carrinho');
     
         return redirect()->route('produtos.index')->with('success', 'Pedido finalizado com sucesso!');
