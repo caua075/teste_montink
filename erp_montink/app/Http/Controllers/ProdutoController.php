@@ -99,6 +99,31 @@ class ProdutoController extends Controller
         return view('produtos.carrinho', compact('carrinho', 'subtotal', 'frete', 'total'));
     }
 
+    public function remover(Request $request, $id)
+    {
+        $carrinho = session()->get('carrinho', []);
+    
+        if (!isset($carrinho[$id])) {
+            return redirect()->route('carrinho')->with('error', 'Produto não encontrado no carrinho.');
+        }
+    
+        if ($carrinho[$id]['quantidade'] > 1) {
+            $carrinho[$id]['quantidade']--;
+        } else {
+            unset($carrinho[$id]);
+        }
+    
+        session()->put('carrinho', $carrinho);
+    
+        // Opcional: aumentar o estoque novamente
+        $produto = Produto::find($id);
+        if ($produto && $produto->estoque) {
+            $produto->estoque->increment('quantidade');
+        }
+    
+        return redirect()->route('carrinho')->with('success', 'Produto removido do carrinho!');
+    }
+
     public function consultarCep(Request $request)
     {
         $request->validate([

@@ -7,22 +7,31 @@
     <p>Seu carrinho está vazio.</p>
     <a href="{{ route('produtos.index') }}" class="btn btn-primary">Voltar aos produtos</a>
 @else
-<table class="table table-bordered">
+<table class="table table-bordered text-center">
     <thead>
         <tr>
             <th>Produto</th>
             <th>Preço Unitário (R$)</th>
             <th>Quantidade</th>
             <th>Subtotal (R$)</th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
-        @foreach ($carrinho as $item)
+        @foreach ($carrinho as $id => $item)
         <tr>
             <td>{{ $item['nome'] }}</td>
             <td>{{ number_format($item['preco'], 2, ',', '.') }}</td>
-            <td>{{ $item['quantidade'] }}</td>
+            <td>
+                {{ $item['quantidade'] }}
+            </td>
             <td>{{ number_format($item['preco'] * $item['quantidade'], 2, ',', '.') }}</td>
+            <td>
+                <form action="{{ route('produtos.remover', $id) }}" method="POST" style="display:inline-block; text-align: center;">
+                    @csrf
+                    <button class="btn btn-sm btn-danger ms-2">Remover</button>
+                </form>
+            </td>
         </tr>
         @endforeach
     </tbody>
